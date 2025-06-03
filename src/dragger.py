@@ -8,6 +8,7 @@ class Dragger:
         self.mouseY = 0 
         self.initial_row = 0
         self.initial_col = 0
+    #blit methods
     def update_blit(self, surface):
         #texture
         self.piece.set_texture(size=128)
@@ -20,7 +21,10 @@ class Dragger:
         img_center=(self.mouseX, self.mouseY)
         self.piece.texture_rect = img.get_rect(center=img_center)
 
+        #blit
+        surface.blit(img, self.piece.texture_rect)
 
+    #other methods
     def update_mouse(self, pos):
         self.mouseX, self.mouseY = pos
     def save_initial(self,pos):
