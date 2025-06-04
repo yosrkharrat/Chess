@@ -35,7 +35,7 @@ class Rook(Piece):
         super().__init__("rook", color, 5.0)
 class Queen(Piece):
     def __init__(self, color):
-        super().__init__("knight", color, 9.0)
+        super().__init__("queen", color, 9.0)
 class King(Piece):
     def __init__(self, color):
         super().__init__("king", color, 10000.0)  # King is invaluable in chess, but we assign a high value for sorting purposes
