@@ -1,13 +1,47 @@
 from const import *
 from square import Square
 from piece import *
+from move import Move
+
 class Board:
     def __init__(self):
         self.squares=[[0,0,0,0,0,0,0,0] for col in range (cols)]
+
         self.create()
         self.add_pieces("white")
         self.add_pieces("black")
-        
+    def calc_moves(self, piece, row, col):
+        '''Calculate the possible moves for a piece at a given position on the board.'''
+        def knight_moves():
+            possible_moves = [
+                
+                (row + 2, col + 1), (row + 2, col - 1),
+                (row - 2, col + 1), (row - 2, col - 1),
+                (row + 1, col + 2), (row + 1, col - 2),
+                (row - 1, col + 2), (row - 1, col - 2)
+
+            ]
+            for possible_move in possible_moves:
+                r,c= possible_move
+                if Square.in_range(r, c):
+                    if self.squares[r][c].isempty_or_rival(piece.color):
+                        initial=Square(row,col)
+                        final=Square(r,c) 
+                        move=Move(initial, final)
+                        piece.add_move(move)
+
+        if isinstance(piece, Pawn):
+            pass
+        elif isinstance(piece, Knight):
+            knight_moves()
+        elif isinstance(piece, Bishop):
+            pass 
+        elif isinstance(piece, Rook):
+            pass
+        elif isinstance(piece, Queen):  
+            pass
+        elif isinstance(piece, King):
+            pass
     def create (self):
         
         for row in range(rows):
