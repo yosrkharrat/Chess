@@ -6,7 +6,7 @@ class Square:
     def has_piece(self):
         return self.piece != None
     
-    def iseempty(self):
+    def isempty(self):
         return not self.has_piece() 
     
     def has_team_piece(self, color):
@@ -16,7 +16,7 @@ class Square:
         return self.has_piece() and self.piece.color != color
        
     def isempty_or_rival(self,color):
-        return self.iseempty() or self.has_rival_piece(color)
+        return self.isempty() or self.has_rival_piece(color)
     
     @staticmethod
     def in_range(*args):

@@ -12,6 +12,36 @@ class Board:
         self.add_pieces("black")
     def calc_moves(self, piece, row, col):
         '''Calculate the possible moves for a piece at a given position on the board.'''
+        def pawn_moves():
+            #steps
+            steps=1 if piece.moved else 2
+
+            #vertical moves
+            start= row + piece.dir
+            end=row + piece.dir * (1+steps)
+            for move_row in range(start, end, piece.dir):
+                if Square.in_range(move_row):
+                    if self.squares[move_row][col].isempty():
+                        initial = Square(row, col)
+                        final = Square(move_row, col)
+                        move = Move(initial, final)
+                        piece.add_move(move)
+                    else:
+                        break
+                else:
+                    break
+
+            #diagonal moves
+            move_row = row + piece.dir
+            move_cols = [col - 1, col + 1]
+            for move_col in move_cols:
+                if Square.in_range(move_row, move_col):
+                    if self.squares[move_row][move_col].has_rival_piece(piece.color):
+                        initial = Square(row, col)
+                        final = Square(move_row, move_col)
+                        move = Move(initial, final)
+                        piece.add_move(move)
+
         def knight_moves():
             possible_moves = [
                 
@@ -29,19 +59,68 @@ class Board:
                         final=Square(r,c) 
                         move=Move(initial, final)
                         piece.add_move(move)
+        
+        def straightline_moves(incrs):
+            for incr in incrs:
+                row_incr, col_incr = incr
+                r, c = row + row_incr, col + col_incr
+                while True:
+                    if Square.in_range(r, c):
+                        intial = Square(row, col)
+                        final= Square(r, c)
+                        move = Move(intial, final)
+                        if self.squares[r][c].isempty():
+                            piece.add_move(move)
+                        if self.squares[r][c].has_rival_piece(piece.color):
+                            piece.add_move(move)
+                            break
+                        if self.squares[r][c].has_team_piece(piece.color):
+                            
+                            break
+                    else: break
+                    r,c= r + row_incr, c + col_incr
 
+
+        def king_moves():
+            adjs=[
+                (row + 1, col + 1), (row + 1, col - 1),
+                (row - 1, col + 1), (row - 1, col - 1),
+                (row + 1, col), (row - 1, col),
+                (row, col + 1), (row, col - 1)
+            ]  
+            for adj in adjs:
+                r, c = adj
+                if Square.in_range(r, c):
+                    if self.squares[r][c].isempty_or_rival(piece.color):
+                        initial = Square(row, col)
+                        final = Square(r, c)
+                        move = Move(initial, final)
+                        piece.add_move(move)       
         if isinstance(piece, Pawn):
-            pass
+            pawn_moves()
+
         elif isinstance(piece, Knight):
             knight_moves()
+
         elif isinstance(piece, Bishop):
-            pass 
+            straightline_moves(
+                [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+            )
+
         elif isinstance(piece, Rook):
-            pass
+            straightline_moves(
+                [(1, 0), (0, 1), (-1, 0), (0, -1)]
+            )
+
         elif isinstance(piece, Queen):  
-            pass
+            straightline_moves(
+                [(1, 1), (1, -1), (-1, 1), (-1, -1),
+                 (1, 0), (0, 1), (-1, 0), (0, -1)]
+            )
+
         elif isinstance(piece, King):
-            pass
+            king_moves()
+            
     def create (self):
         
         for row in range(rows):
