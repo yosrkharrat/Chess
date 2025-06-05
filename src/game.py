@@ -4,8 +4,10 @@ from board import Board
 from dragger import Dragger
 class Game:
     def __init__(self):
+        self.next_player='white'
         self.board=Board()
         self.dragger=Dragger()
+        self.hovered_square=None
     #show methods
     def show_board(self,surface):
         for row in range(rows):
@@ -38,6 +40,31 @@ class Game:
                 rect=(move.final.col * sqize, move.final.row * sqize, sqize, sqize)
                 #blit
                 pygame.draw.rect(surface, color, rect)
+
+    def show_last_move(self, surface):
+        if self.board.last_move:
+            initial = self.board.last_move.initial
+            final=self.board.last_move.final
+            for pos in [initial, final]:
+                #color
+                color="#F2C94C" if (pos.row + pos.col) % 2 == 0 else "#F2994A"
+                #rect
+                rect=(pos.col * sqize, pos.row * sqize, sqize, sqize)
+                #blit
+                pygame.draw.rect(surface, color, rect)
+    def show_hover(self, surface):
+        if self.hovered_square:
+            #color
+            color="#A3A3A3" 
+            #rect
+            rect=(self.hovered_square.col * sqize, self.hovered_square.row * sqize, sqize, sqize)
+            #blit
+            pygame.draw.rect(surface, color, rect, width=3)
+    def next_turn(self):
+        # Logic to switch turns can be added here
+        self.next_player='white' if self.next_player== 'black' else 'black'
+    def set_hover(self, row, col):
+        self.hovered_square= self.board.squares[row][col]
                 
 
         

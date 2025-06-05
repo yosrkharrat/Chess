@@ -6,10 +6,24 @@ from move import Move
 class Board:
     def __init__(self):
         self.squares=[[0,0,0,0,0,0,0,0] for col in range (cols)]
-
+        self.last_move=None
         self.create()
         self.add_pieces("white")
         self.add_pieces("black")
+    def move(self,piece,move):
+        initial = move.initial
+        final = move.final
+        #concole board move update 
+        self.squares[initial.row][initial.col].piece = None
+        self.squares[final.row][final.col].piece = piece
+        #move
+        piece.moved = True
+        #clear valid moves
+        piece.clear_moves()
+        #set last move 
+        self.last_move=move
+    def valid_move(self, piece, move):
+        return move in piece.moves
     def calc_moves(self, piece, row, col):
         '''Calculate the possible moves for a piece at a given position on the board.'''
         def pawn_moves():
@@ -120,7 +134,7 @@ class Board:
 
         elif isinstance(piece, King):
             king_moves()
-            
+
     def create (self):
         
         for row in range(rows):

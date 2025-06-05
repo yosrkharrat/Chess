@@ -2,7 +2,8 @@ import pygame
 import sys 
 from game import Game
 from const import*
-
+from move import Move
+from square import Square
 
 class Main:
     def __init__(self):
@@ -18,38 +19,71 @@ class Main:
         board=self.game.board
         
         while True:
-            self.game.show_board(screen)
-            self.game.show_moves(screen)
-            self.game.show_pieces(screen)
+            game.show_board(screen)
+            game.show_last_move(screen)
+            game.show_moves(screen)
+            game.show_pieces(screen)
+            game.show_hover(screen)
             if dragger.dragging:
                 dragger.update_blit(screen)
             for event in pygame.event.get():
                 #click
                 if event.type==pygame.MOUSEBUTTONDOWN:
                     dragger.update_mouse(event.pos)
-                    
+
                     clicked_row = dragger.mouseY // sqize
                     clicked_col = dragger.mouseX // sqize
                     # Check if the clicked square has a piece
                     if board.squares[clicked_row][clicked_col].has_piece():
                         piece = board.squares[clicked_row][clicked_col].piece
-                        board.calc_moves(piece, clicked_row, clicked_col)
-                        dragger.save_initial(event.pos)
-                        dragger.drag_piece(piece)
-                        game.show_board(screen)
-                        game.show_moves(screen)
-                        game.show_pieces(screen)
+                        #validate piece color
+                        if piece.color==game.next_player:
+                            board.calc_moves(piece, clicked_row, clicked_col)
+                            dragger.save_initial(event.pos)
+                            dragger.drag_piece(piece)
+                            game.show_board(screen)
+                            game.show_last_move(screen)
+                            game.show_moves(screen)
+                            game.show_pieces(screen)
                  #mouse motion    
                 elif event.type==pygame.MOUSEMOTION:
+                    motion_row=event.pos[1] // sqize
+                    motion_col=event.pos[0] // sqize
+                    game.set_hover(motion_row, motion_col)
                     if dragger.dragging:
                         dragger.update_mouse(event.pos)
                         game.show_board(screen)
+                        game.show_last_move(screen)
                         game.show_moves(screen)
                         game.show_pieces(screen)
+                        game.show_hover(screen)
                         dragger.update_blit(screen)
                 #click release
                 elif event.type==pygame.MOUSEBUTTONUP:
+                    if dragger.dragging:
+                        dragger.update_mouse(event.pos)
+                        released_row = dragger.mouseY // sqize
+                        released_col = dragger.mouseX // sqize
+
+                        #create possible move
+                        initial=Square(dragger.initial_row, dragger.initial_col)
+                        final=Square(released_row, released_col)
+                        move = Move(initial, final)
+                        
+                        
+                        #check if the move is valid
+                        if board.valid_move(dragger.piece, move):
+                            #move piece
+                            board.move(dragger.piece, move)
+                            game.show_board(screen)
+                            game.show_last_move(screen)
+                            game.show_pieces(screen)
+
+                            game.next_turn()
+
+                       
                     dragger.undrag_piece()
+
 
                 elif event.type == pygame.QUIT:
                     pygame.quit()
