@@ -40,4 +40,6 @@ class Queen(Piece):
         super().__init__("queen", color, 9.0)
 class King(Piece):
     def __init__(self, color):
+        self.left_rook = None
+        self.right_rook = None
         super().__init__("king", color, 10000.0)  # King is invaluable in chess, but we assign a high value for sorting purposes
