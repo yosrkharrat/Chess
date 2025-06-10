@@ -3,6 +3,8 @@ from square import Square
 from piece import *
 from move import Move
 import copy
+from sound import Sound
+import os
 
 class Board:
     def __init__(self):
@@ -11,7 +13,7 @@ class Board:
         self.create()
         self.add_pieces("white")
         self.add_pieces("black")
-    def move(self,piece,move):
+    def move(self,piece,move, testing=False):
         initial = move.initial
         final = move.final
         en_passant_empty=self.squares[final.row][final.col].isempty()
@@ -25,6 +27,11 @@ class Board:
                 
                 self.squares[initial.row][initial.col+diff].piece = None
                 self.squares[final.row][final.col].piece = piece
+                if not testing:
+                    sound=Sound(
+                        os.path.join('assets/sounds/capture.wav')
+                    )
+                    sound.play()
 
         
             #pawn en passant
@@ -58,7 +65,7 @@ class Board:
     def in_check(self, piece, move):
         temp_piece = copy.deepcopy(piece)
         temp_board=copy.deepcopy(self)
-        temp_board.move(temp_piece, move)
+        temp_board.move(temp_piece, move, testing=True)
         for row in range(rows):
             for col in range(cols):
                 if temp_board.squares[row][col].has_rival_piece(piece.color):
