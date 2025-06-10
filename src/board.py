@@ -14,12 +14,26 @@ class Board:
     def move(self,piece,move):
         initial = move.initial
         final = move.final
+        en_passant_empty=self.squares[final.row][final.col].isempty()
         #concole board move update 
         self.squares[initial.row][initial.col].piece = None
         self.squares[final.row][final.col].piece = piece
-        #pawn promotion
         if isinstance(piece, Pawn):
-            self.check_promotion(piece, final)
+            diff=final.col -initial.col
+            if diff!=0 and en_passant_empty:
+                
+                
+                self.squares[initial.row][initial.col+diff].piece = None
+                self.squares[final.row][final.col].piece = piece
+
+        
+            #pawn en passant
+            if self.en_passant(initial, final):
+                piece.en_passant=True
+                
+            #pawn promotion
+            else:
+                self.check_promotion(piece, final)
         #king castling
         if isinstance(piece, King):
             if self.castling(initial, final):
@@ -38,6 +52,9 @@ class Board:
             self.squares[final.row][final.col].piece=Queen(piece.color)
     def castling(self, initial, final):
         return abs(initial.col - final.col) == 2 
+    def en_passant(self, initial, final):
+        return abs(initial.row-final.row)==2
+    
     def in_check(self, piece, move):
         temp_piece = copy.deepcopy(piece)
         temp_board=copy.deepcopy(self)
@@ -94,6 +111,47 @@ class Board:
                         final = Square(possible_move_row, possible_move_col, final_piece)
                         move = Move(initial, final)
                         piece.add_move(move)
+            #en passant moves
+            r=3 if piece.color=='white' else 4
+            fr=2 if piece.color=='white' else 5
+            #left en passant
+            if Square.in_range(col-1)and row==r:
+                if self.squares[row][col-1].has_rival_piece(piece.color):
+                    p=self.squares[row][col-1].piece
+                    if isinstance(p, Pawn):
+                        if p.en_passant:
+                            initial = Square(row, col)
+                        
+                            final = Square(fr , col-1 , p)
+                            move = Move(initial, final)
+                            
+
+                            #potential checks 
+                            if bool:
+                                if not self.in_check(piece, move):
+                                    piece.add_move(move)
+                            else:
+                                piece.add_move(move)
+            #right en passant
+            if Square.in_range(col+1)and row==r:
+                if self.squares[row][col+1].has_rival_piece(piece.color):
+                    p=self.squares[row][col+1].piece
+                    if isinstance(p, Pawn):
+                        if p.en_passant:
+                            initial = Square(row, col)
+                        
+                            final = Square(fr , col+1 , p)
+                            move = Move(initial, final)
+                            
+
+                            #potential checks 
+                            if bool:
+                                if not self.in_check(piece, move):
+                                    piece.add_move(move)
+                            else:
+                                piece.add_move(move)
+
+
 
         def knight_moves():
             possible_moves = [
