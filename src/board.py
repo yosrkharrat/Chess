@@ -41,7 +41,7 @@ class Board:
                 self.check_promotion(piece, final)
         #king castling
         if isinstance(piece, King):
-            if self.castling(initial, final):
+            if self.castling(initial, final)and not testing:
                 diff = final.col - initial.col
                 rook=piece.left_rook if diff < 0 else piece.right_rook
                 self.move(rook, rook.moves[-1])
