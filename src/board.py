@@ -34,9 +34,7 @@ class Board:
                     sound.play()
 
         
-            #pawn en passant
-            if self.en_passant(initial, final):
-                piece.en_passant=True
+            
                 
             #pawn promotion
             else:
@@ -59,9 +57,16 @@ class Board:
             self.squares[final.row][final.col].piece=Queen(piece.color)
     def castling(self, initial, final):
         return abs(initial.col - final.col) == 2 
-    def en_passant(self, initial, final):
-        return abs(initial.row-final.row)==2
     
+    def set_true_en_passant(self, piece):
+        if not isinstance(piece, Pawn):
+            return 
+        for row in range(rows):
+            for col in range (cols):
+                if isinstance(self.squares[row][col].piece, Pawn):
+                    self.squares[row][col].piece.en_passant= False
+        piece.en_passant=True
+
     def in_check(self, piece, move):
         temp_piece = copy.deepcopy(piece)
         temp_board=copy.deepcopy(self)
